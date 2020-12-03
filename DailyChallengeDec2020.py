@@ -21,7 +21,7 @@ class Solution_dec1(object):
         """
         return self.recursiveDepth(root, 0)
 
-
+#--------------------------------------------------------
 
 # December, 2nd. Definition for singly-linked list.
 # Given a singly linked list, return a random node's value from the linked list. Each node must have the same probability of being chosen.
@@ -30,7 +30,7 @@ class Solution_dec1(object):
 #         self.val = val
 #         self.next = next
 import random
-class Solution(object):
+class Solution_2(object):
 
     def __init__(self, head):
         """
@@ -62,3 +62,52 @@ class Solution(object):
 # Your Solution object will be instantiated and called as such:
 # obj = Solution(head)
 # param_1 = obj.getRandom()
+
+#--------------------------------------------------------
+
+# December, 3rd. Increasing order search tree.
+# Given the root of a binary search tree, rearrange the tree in in-order so that the leftmost
+# node in the tree is now the root of the tree, and every node has no left child and only one right child.
+
+# Definition for a binary tree node.
+class TreeNode(object):
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+class Solution(object):
+    def recursiveAdd(self, node_list, current_node, current_index):
+        """Recursive function to traverse the tree (DFS). Adds each value of the node to a list on the left side of its
+        parent if it is the first child and to the right if it is the second"""
+        if current_node.left is not None:
+            node_list.insert(current_index, current_node.left.val)
+            node_list, current_index = self.recursiveAdd(node_list, current_node.left, current_index)
+            current_index += 1
+        if current_node.right is not None:
+            node_list.insert(current_index+1, current_node.right.val)
+            node_list, current_index = self.recursiveAdd(node_list, current_node.right, current_index+1)
+        return node_list, current_index
+    def increasingBST(self, root):
+        """
+        Gets a list with values of the nodes in the requested order and then creates a new tree
+        using that order.
+        :type root: TreeNode
+        :rtype: TreeNode
+        """
+        node_list, index = self.recursiveAdd([root.val], root, 0)
+        print(node_list)
+        root_new = TreeNode(node_list[0])
+        current = root_new
+        for i in range(1,len(node_list)):
+            current.right = TreeNode(node_list[i])
+            current = current.right
+        return root_new
+
+test_root = TreeNode(5, TreeNode(3, TreeNode(2, TreeNode(1)), TreeNode(4)), TreeNode(6, None, TreeNode(8, TreeNode(7), TreeNode(9))))
+sol = Solution()
+new_tree = sol.increasingBST(test_root)
+current_new = new_tree
+while current_new is not None:
+    print(current_new.val)
+    current_new = current_new.right
+

@@ -75,7 +75,7 @@ class TreeNode(object):
         self.val = val
         self.left = left
         self.right = right
-class Solution(object):
+class Solution_3(object):
     def recursiveAdd(self, node_list, current_node, current_index):
         """Recursive function to traverse the tree (DFS). Adds each value of the node to a list on the left side of its
         parent if it is the first child and to the right if it is the second"""
@@ -103,11 +103,36 @@ class Solution(object):
             current = current.right
         return root_new
 
-test_root = TreeNode(5, TreeNode(3, TreeNode(2, TreeNode(1)), TreeNode(4)), TreeNode(6, None, TreeNode(8, TreeNode(7), TreeNode(9))))
-sol = Solution()
-new_tree = sol.increasingBST(test_root)
-current_new = new_tree
-while current_new is not None:
-    print(current_new.val)
-    current_new = current_new.right
+# test_root = TreeNode(5, TreeNode(3, TreeNode(2, TreeNode(1)), TreeNode(4)), TreeNode(6, None, TreeNode(8, TreeNode(7), TreeNode(9))))
+# sol = Solution()
+# new_tree = sol.increasingBST(test_root)
+# current_new = new_tree
+# while current_new is not None:
+#     print(current_new.val)
+#     current_new = current_new.right
 
+#--------------------------------------------------------
+
+# December, 4th. The kth Factor of n
+# Given two positive integers n and k.
+#
+# A factor of an integer n is defined as an integer i where n % i == 0.
+#
+# Consider a list of all factors of n sorted in ascending order, return the kth factor in this list or
+# return -1 if n has less than k factors.
+
+
+class Solution_4(object):
+    def kthFactor(self, n, k):
+        """
+        :type n: int
+        :type k: int
+        :rtype: int
+        """
+        list_of_factors = []
+        for i in range(1,n+1):
+            if n % i == 0:
+                list_of_factors.append(i)
+        if len(list_of_factors) < k:
+            return -1
+        return list_of_factors[k-1]

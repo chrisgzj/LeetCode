@@ -136,3 +136,50 @@ class Solution_4(object):
         if len(list_of_factors) < k:
             return -1
         return list_of_factors[k-1]
+
+#--------------------------------------------------------
+
+# December, 5th. Can place flowers
+# You have a long flowerbed in which some of the plots are planted, and some are not. However, flowers cannot
+# be planted in adjacent plots.
+#
+# Given an integer array flowerbed containing 0's and 1's, where 0 means empty and 1 means not empty, and an
+# integer n, return if n new flowers can be planted in the flowerbed without violating the no-adjacent-flowers
+# rule.
+
+class Solution_5(object):
+    def canPlaceFlowers(self, flowerbed, n):
+        """
+        Traverses the list once and checks, for each place, if a plant can be located there.
+        Separate if clauses for first and last position of the flowerbed, as well as edge cases.
+        Edge cases: flowerbed empty or with only one plot.
+        :type flowerbed: List[int]
+        :type n: int
+        :rtype: bool
+        """
+        if flowerbed == []:
+            return False
+        if flowerbed == [0]:
+            if n > 1:
+                return False
+            return True
+        if flowerbed == [1]:
+            if n == 0:
+                return True
+            return False
+        if flowerbed[0] == 0 and flowerbed[1] == 0:
+            flowerbed[0] = 1
+            n -= 1
+        for plot in range(1, len(flowerbed)-2):
+            if flowerbed[plot] == 0 and flowerbed[plot - 1] == 0 and flowerbed[plot + 1] == 0:
+                flowerbed[plot] = 1
+                n -= 1
+        if flowerbed[len(flowerbed) - 1] == 0 and flowerbed[len(flowerbed)-2] == 0:
+            flowerbed[0] = 1
+            n -= 1
+        if n <= 0:
+            return True
+        return False
+
+sol = Solution_5()
+print(sol.canPlaceFlowers([1,0,0,0,1], 2))

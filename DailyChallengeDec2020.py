@@ -200,9 +200,11 @@ class Node(object):
         self.right = right
         self.next = next
 
-
 class Solution(object):
     def find_node_by_map(self, root, tree_map):
+        """Function that finds a node for a specific tree_map or returns none if it does not exist.
+        Tree map is a string containing 1s and 0s and describing the path for getting from the root
+        to a node. 1 for each right and 0 for each left."""
         current = root
         for path in range(1, len(str(tree_map))):
             if current is None:
@@ -214,34 +216,66 @@ class Solution(object):
         return current
 
     def next_map(self, tree_map):
+        """Function that, given a tree_map, returns the map for the next node if the tree was full"""
         map_int = bin(int(tree_map, 2) + 1)
         map_str = str(map_int)
         return map_str[2:]
 
-    def set_next_node(self, root, current, tree_map):
+    def set_next_node_v1(self, root, current, parent, am_i_left, tree_map):
+        """Function that sets the next node for each node in the tree.
+        It uses next_map (in a loop) to get the theorical next node and then find_node_by_map
+        to see if it exists and update current.next.
+        This version of the solution worked, but the performance was too poor since it had to traverse
+        the tree several times for each node."""
         if current is None:
             return
         if len(tree_map) > 1:
-            next_node = None
-            next_try = self.next_map(tree_map)
-            while next_node is None and len(next_try) == len(tree_map):
-                next_node = self.find_node_by_map(root, next_try)
-                next_try = self.next_map(next_try)
-            current.next = next_node
-            # return next_node # for testing only
-        self.set_next_node(root, current.left, tree_map + '0')
-        self.set_next_node(root, current.right, tree_map + '1')
+            if am_i_left and not(parent.right is None):
+                current.next = parent.right
+            else:
+                next_node = None
+                next_try = self.next_map(tree_map)
+                while next_node is None and len(next_try) == len(tree_map):
+                    next_node = self.find_node_by_map(root, next_try)
+                    next_try = self.next_map(next_try)
+                current.next = next_node
+        self.set_next_node_v1(root, current.left, current, True, tree_map + '0')
+        self.set_next_node_v1(root, current.right, current, False, tree_map + '1')
+
+    def set_next_node(self, current, parent):
+        """Function that sets the next node to the right for each node in the tree.
+        It builds over the fact that, if we start always by the right leaf, the parent of every
+        node must already have a next node defined when we search for the current next."""
+        if current is None:
+            return
+        if not(parent is None):
+            if not(parent.right is None) and parent.right != current:
+                current.next = parent.right
+            else:
+                next_node = None
+                parent_level = parent.next
+                while next_node is None and not(parent_level is None):
+                    if not(parent_level.left is None):
+                        next_node = parent_level.left
+                    else:
+                        next_node = parent_level.right
+                    parent_level = parent_level.next
+                current.next = next_node
+        self.set_next_node(current.right, current)
+        self.set_next_node(current.left, current)
+
 
     def connect(self, root):
         """
         :type root: Node
         :rtype: Node
         """
-        self.set_next_node(root, root, '1')
+        # self.set_next_node(root, root, root, False, '1') v1
+        self.set_next_node(root, None)
         return root
 
-test_root = Node(5, Node(3, Node(2, Node(1)), Node(4)), Node(6, None, Node(8, Node(7), Node(9))))
-sol = Solution()
-original = sol.find_node_by_map(test_root, '1111')
-print(original.val)
-print(sol.set_next_node(test_root, original, '1111').val)
+# test_root = Node(5, Node(3, Node(2, Node(1)), Node(4)), Node(6, None, Node(8, Node(7), Node(9))))
+# sol = Solution()
+# original = sol.find_node_by_map(test_root, '1111')
+# print(original.val)
+# print(sol.set_next_node(test_root, original, '1111').val)

@@ -181,5 +181,67 @@ class Solution_5(object):
             return True
         return False
 
-sol = Solution_5()
-print(sol.canPlaceFlowers([1,0,0,0,1], 2))
+#--------------------------------------------------------
+# December, 6th. Populating Next Right Pointers in Each Node II
+# Given a binary tree
+# struct Node {
+#   int val;
+#   Node *left;
+#   Node *right;
+#   Node *next;
+# }
+# Populate each next pointer to point to its next right node. If there is no next right node, the next pointer should be set to NULL.
+# Initially, all next pointers are set to NULL.
+
+class Node(object):
+    def __init__(self, val=0, left=None, right=None, next=None):
+        self.val = val
+        self.left = left
+        self.right = right
+        self.next = next
+
+
+class Solution(object):
+    def find_node_by_map(self, root, tree_map):
+        current = root
+        for path in range(1, len(str(tree_map))):
+            if current is None:
+                return None
+            if str(tree_map)[path] == '0':
+                current = current.left
+            if str(tree_map)[path] == '1':
+                current = current.right
+        return current
+
+    def next_map(self, tree_map):
+        map_int = bin(int(tree_map, 2) + 1)
+        map_str = str(map_int)
+        return map_str[2:]
+
+    def set_next_node(self, root, current, tree_map):
+        if current is None:
+            return
+        if len(tree_map) > 1:
+            next_node = None
+            next_try = self.next_map(tree_map)
+            while next_node is None and len(next_try) == len(tree_map):
+                next_node = self.find_node_by_map(root, next_try)
+                next_try = self.next_map(next_try)
+            current.next = next_node
+            # return next_node # for testing only
+        self.set_next_node(root, current.left, tree_map + '0')
+        self.set_next_node(root, current.right, tree_map + '1')
+
+    def connect(self, root):
+        """
+        :type root: Node
+        :rtype: Node
+        """
+        self.set_next_node(root, root, '1')
+        return root
+
+test_root = Node(5, Node(3, Node(2, Node(1)), Node(4)), Node(6, None, Node(8, Node(7), Node(9))))
+sol = Solution()
+original = sol.find_node_by_map(test_root, '1111')
+print(original.val)
+print(sol.set_next_node(test_root, original, '1111').val)

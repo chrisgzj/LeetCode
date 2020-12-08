@@ -200,7 +200,7 @@ class Node(object):
         self.right = right
         self.next = next
 
-class Solution(object):
+class Solution_6(object):
     def find_node_by_map(self, root, tree_map):
         """Function that finds a node for a specific tree_map or returns none if it does not exist.
         Tree map is a string containing 1s and 0s and describing the path for getting from the root
@@ -279,3 +279,52 @@ class Solution(object):
 # original = sol.find_node_by_map(test_root, '1111')
 # print(original.val)
 # print(sol.set_next_node(test_root, original, '1111').val)
+
+class Solution_7:
+    def add_next(self, value, current_i, current_j, current_direction, spiral_matrix):
+        """
+        :type value: int - The value to be added to the matrix.
+        :type current_i: int - The previous vertical position in which a value was added.
+        :type current_j: int - The previous horizontal position in which a value was added.
+        :type current_direction: int - value from 0 to 3 represents the current direction of the
+         additions to the matrix (right, down, left, up)
+        :type spiral_matrix: List[List[int]] - the matrix to be filled
+        Function that adds the next value to spiral_matrix. If a value can be added in the next position
+        according to current_direction, it is added. If not, the direction is updated and the function
+        called again recursively with the new direction."""
+        if current_direction == 0:
+            if len(spiral_matrix[0]) > current_j + 1 and spiral_matrix[current_i][current_j + 1] == 0:
+                spiral_matrix[current_i][current_j + 1] = value
+                return current_i, current_j + 1, current_direction, spiral_matrix
+        if current_direction == 1:
+            if len(spiral_matrix) > current_i + 1 and spiral_matrix[current_i + 1][current_j] == 0:
+                spiral_matrix[current_i + 1][current_j] = value
+                return current_i + 1, current_j, current_direction, spiral_matrix
+        if current_direction == 2:
+            if current_j > 0 and spiral_matrix[current_i][current_j - 1] == 0:
+                spiral_matrix[current_i][current_j - 1] = value
+                return current_i, current_j - 1, current_direction, spiral_matrix
+        if current_direction == 3:
+            if current_i > 0 and spiral_matrix[current_i - 1][current_j] == 0:
+                spiral_matrix[current_i - 1][current_j] = value
+                return current_i - 1, current_j, current_direction, spiral_matrix
+        current_direction = (current_direction + 1) % 4
+        return self.add_next(value, current_i, current_j, current_direction, spiral_matrix)
+
+    def generateMatrix(self, n):
+        """
+        :type n: int
+        :rtype: List[List[int]]
+        Function that generates the empty matrix and, for every element in n**2, calls next_elem.
+        """
+        spiral_matrix = [[0 for i in range(n)] for j in range(n)]
+        limit = n**2
+        i = 0
+        j = -1 # Because add_next will begin by adding 1 to j.
+        direction = 0
+        for next_elem in range(1, limit + 1):
+            i, j, direction, spiral_matrix = self.add_next(next_elem, i, j, direction, spiral_matrix)
+        return spiral_matrix
+
+sol = Solution_7()
+print(sol.generateMatrix(3))

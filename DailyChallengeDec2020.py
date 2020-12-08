@@ -280,6 +280,10 @@ class Solution_6(object):
 # print(original.val)
 # print(sol.set_next_node(test_root, original, '1111').val)
 
+#--------------------------------------------------------
+# December, 7th. Spiral Matrix II
+# Given a positive integer n, generate an n x n matrix filled with elements from 1 to n2 in spiral order.
+
 class Solution_7:
     def add_next(self, value, current_i, current_j, current_direction, spiral_matrix):
         """
@@ -326,5 +330,34 @@ class Solution_7:
             i, j, direction, spiral_matrix = self.add_next(next_elem, i, j, direction, spiral_matrix)
         return spiral_matrix
 
-sol = Solution_7()
-print(sol.generateMatrix(3))
+#--------------------------------------------------------
+# December, 8th. Pairs of Songs With Total Durations Divisible by 60
+# You are given a list of songs where the ith song has a duration of time[i] seconds.
+# Return the number of pairs of songs for which their total duration in seconds is divisible by 60.
+# Formally, we want the number of indices i, j such that i < j with (time[i] + time[j]) % 60 == 0.
+
+class Solution_8:
+    def numPairsDivisibleBy60(self, time_list):
+        """
+        :type time_list: List[int]
+        :rtype: int
+        Function that calculates the number of pairs of songs whose durations add up to something divisible by 60.
+        It first stores the residue of 60 of every song in an list of len 60. And then multiplies each pairs of i, j
+        such that i + j % 60 is cero.
+        """
+        durations_in_module = [0 for duration in range(60)]
+        for song in time_list:
+            durations_in_module[song % 60] += 1
+        success_combinations = 0
+        for i in range(60):
+            for j in range(60):
+                if (i + j) % 60 == 0:
+                    success_combinations += durations_in_module[i] * durations_in_module[j]
+                    if i == j:
+                        success_combinations -= durations_in_module[i]
+        return success_combinations/2
+
+
+sol = Solution_8()
+time_list = [30,20,150,100,40]
+print(sol.numPairsDivisibleBy60(time_list))

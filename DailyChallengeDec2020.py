@@ -358,6 +358,68 @@ class Solution_8:
         return success_combinations/2
 
 
-sol = Solution_8()
-time_list = [30,20,150,100,40]
-print(sol.numPairsDivisibleBy60(time_list))
+# sol = Solution_8()
+# time_list = [30,20,150,100,40]
+# print(sol.numPairsDivisibleBy60(time_list))
+
+#--------------------------------------------------------
+# December, 9th. Binary Search Tree Iterator.
+# Implement the BSTIterator class that represents an iterator over the in-order traversal of a binary search tree (BST):
+# BSTIterator(TreeNode root) Initializes an object of the BSTIterator class. The root of the BST is given as part of the constructor. The pointer should be initialized to a non-existent number smaller than any element in the BST.
+# boolean hasNext() Returns true if there exists a number in the traversal to the right of the pointer, otherwise returns false.
+# int next() Moves the pointer to the right, then returns the number at the pointer.
+# Notice that by initializing the pointer to a non-existent smallest number, the first call to next() will return the smallest element in the BST.
+# You may assume that next() calls will always be valid. That is, there will be at least a next number in the in-order traversal when next() is called.
+
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class BSTIterator(object):
+    """Implements an iterator using python's built in generator objects. Since python does not provide a
+    hasNext method, the iterator counts the number of available nodes and updates the count in every yield
+    as to provide the hasNext functionality"""
+    def __init__(self, root):
+        """
+        :type root: TreeNode
+        """
+        self.root = root
+        self.counter = 0
+        self.total_length = 0
+        self.count_length(root)
+        self.inner_generator = self.inner_next(self.root)
+
+    def count_length(self, current):
+        if not(current is None):
+            self.total_length += 1
+            self.count_length(current.left)
+            self.count_length(current.right)
+
+    def next(self):
+        """
+        :rtype: int
+        """
+        self.counter += 1
+        return next(self.inner_generator).val
+
+    def inner_next(self, current):
+        if not(current is None):
+            yield from self.inner_next(current.left)
+            yield current
+            yield from self.inner_next(current.right)
+
+    def hasNext(self):
+        """
+        :rtype: bool
+        """
+        return self.counter < self.total_length
+
+test_root = TreeNode(5, TreeNode(3, TreeNode(2, TreeNode(1)), TreeNode(4)), TreeNode(6, None, TreeNode(8, TreeNode(7), TreeNode(9))))
+
+test_iter = BSTIterator(test_root)
+
+print(test_iter.next())
+print(test_iter.hasNext())
+

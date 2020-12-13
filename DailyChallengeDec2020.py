@@ -475,3 +475,81 @@ class Solution(object):
                 else:
                     index += 1 # Only increases when element is not deleted.
         return len(nums)
+
+#--------------------------------------------------------
+# December, 12th. Smallest Subtree with all the Deepest Nodes
+# Given the root of a binary tree, the depth of each node is the shortest distance to the root.
+# Return the smallest subtree such that it contains all the deepest nodes in the original tree.
+# A node is called the deepest if it has the largest depth possible among any node in the entire tree.
+# The subtree of a node is tree consisting of that node, plus the set of all descendants of that node.
+
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution_12(object):
+    def __init__(self):
+        self.deepest_nodes = [[]] # So that it always has an element in index 0 to compare.
+
+    def findDeepestNodes(self, current, path_to_current):
+        """
+        :type current: TreeNode
+        :type path_to_current: List[int]
+        Function that traverses the tree and adds to self.deepest_nodes all the pahts to the nodes with the highest depth
+        """
+        if current is None:
+            return
+        if len(self.deepest_nodes[0]) == len(path_to_current):
+            self.deepest_nodes.append(path_to_current)
+        elif len(self.deepest_nodes[0]) < len(path_to_current):
+            self.deepest_nodes = [path_to_current]
+        self.findDeepestNodes(current.left, path_to_current + [0])
+        self.findDeepestNodes(current.right, path_to_current + [1])
+
+    def findCommonAncestor(self):
+        """
+        Function that returns a path to the common ancestor of all elements in self.deepest_nodes
+        """
+        path_to_ancestor = []
+        for level in range(len(self.deepest_nodes[0])):
+            nodes = [self.deepest_nodes[k][level] for k in range(len(self.deepest_nodes))]
+            if len(set(nodes)) == 1:
+                path_to_ancestor.append(nodes[0])
+            else:
+                break
+        return path_to_ancestor
+
+    def findNodeByPath(self, root, path):
+        """
+        :type root: TreeNode
+        :type path: List[int]
+        :rtype: Treenode
+        Function that raturns the reference to the node that can be found following the given path in the tree
+        """
+        del path[0] # Because the first element in path is always 1.
+        current = root
+        for turn in path:
+            if turn == 0:
+                current = current.left
+            else:
+                current = current.right
+        return current
+
+    def subtreeWithAllDeepest(self, root):
+        """
+        :type root: TreeNode
+        :rtype: TreeNode
+        Function that finds and returns te common ancestor to all the deepest nodes in the tree.
+        """
+        self.findDeepestNodes(root, [1])
+        path_to_ancestor = self.findCommonAncestor()
+        return self.findNodeByPath(root, path_to_ancestor)
+
+
+
+test_root = TreeNode(5, TreeNode(3, TreeNode(2), TreeNode(4)), TreeNode(6, None, TreeNode(8, TreeNode(7), TreeNode(9))))
+sol = Solution_12()
+print(sol.subtreeWithAllDeepest(test_root).val)
+print(sol.deepest_nodes)

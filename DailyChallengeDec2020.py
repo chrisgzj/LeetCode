@@ -547,9 +547,38 @@ class Solution_12(object):
         path_to_ancestor = self.findCommonAncestor()
         return self.findNodeByPath(root, path_to_ancestor)
 
+# test_root = TreeNode(5, TreeNode(3, TreeNode(2), TreeNode(4)), TreeNode(6, None, TreeNode(8, TreeNode(7), TreeNode(9))))
+# sol = Solution_12()
+# print(sol.subtreeWithAllDeepest(test_root).val)
+# print(sol.deepest_nodes)
+
+#--------------------------------------------------------
+# December, 13th. Burst Balloons
+# Given n balloons, indexed from 0 to n-1. Each balloon is painted with a number on it represented by array nums.
+# You are asked to burst all the balloons. If the you burst balloon i you will get nums[left] * nums[i] * nums[right] coins.
+# Here left and right are adjacent indices of i. After the burst, the left and right then becomes adjacent.
+# Find the maximum coins you can collect by bursting the balloons wisely.
+
+class Solution_13(object):
+    def maxCoins(self, nums, coins = 0, removed = ''):
+        """Function that recursively explores all the possible orders of balloons bursting and returns the one with the
+        highest coins accumulated. The removed argument is used only for visualization purposes."""
+        if len(nums) == 0:
+            return coins, removed
+        maximums = []
+        max_removed = []
+        for index in range(len(nums)):
+            left_neighbour = nums[index - 1] if index > 0 else 1
+            right_neighbour = nums[index + 1] if index < len(nums) - 1 else 1
+            new_coins = nums[index] * left_neighbour * right_neighbour
+            new_nums = [nums[item] for item in range(len(nums)) if item != index]
+            max_coins, max_rem = self.maxCoins(new_nums, coins + new_coins, removed + str(index))
+            maximums.append(max_coins)
+            max_removed.append(max_rem)
+        index_of_max = [i for i, j in enumerate(maximums) if j == max(maximums)]
+        return max(maximums)
 
 
-test_root = TreeNode(5, TreeNode(3, TreeNode(2), TreeNode(4)), TreeNode(6, None, TreeNode(8, TreeNode(7), TreeNode(9))))
-sol = Solution_12()
-print(sol.subtreeWithAllDeepest(test_root).val)
-print(sol.deepest_nodes)
+nums = [7,9,8,0,7,1,3,5,5,2]
+sol = Solution_13()
+print(sol.maxCoins(nums))

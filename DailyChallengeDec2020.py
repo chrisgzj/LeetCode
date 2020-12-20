@@ -691,6 +691,8 @@ class Solution_19(object):
 # Now for some encoded string S, and an index K, find and return the K-th letter (1 indexed) in the decoded string.
 
 import time
+import re
+
 def timing_val(func):
     def wrapper(*arg, **kw):
         '''source: http://www.daniweb.com/code/snippet368.html'''
@@ -709,19 +711,26 @@ class Solution_20(object):
         :type K: int
         :rtype: str
         """
-        decoded_S = S[0]
-        digits = "23456789"
-        for char in S[1:]:
-            if char in digits:
-                decoded_S = decoded_S * int(char)
-                if len(decoded_S) > K:
-                    return decoded_S[K-1]
-            else:
-                decoded_S = decoded_S + char
-        return decoded_S[K-1]
+        decoded_S = ""
+        regex_pairs = re.findall(r"([a-z]+)([2-9]+)", S)
+        for pair in regex_pairs:
+            next_product = 1
+            for item in pair[1]:
+                next_product = next_product * int(item)
+                # if next_product > K:
+                #     break
+            decoded_S = (decoded_S + pair[0]) * next_product
+        last_letters = re.search(r"[a-z]+$", S)
+        if last_letters:
+            decoded_S = decoded_S + last_letters.group(0)
+        return decoded_S [K-1]
+
 
 S = "y959q969u3hb22odq595"
+# S = "abc"
 sol = Solution_20()
 print(sol.decodeAtIndex(S,222280369))
+
+
 
 

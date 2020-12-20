@@ -678,7 +678,50 @@ class Solution_19(object):
         return self.recursive_cherry(grid, 0, 0, len(grid[0]) - 1)
 
 
-grid = [[8,8,10,9,1,7],[8,8,1,8,4,7],[8,6,10,3,7,7],[3,0,9,3,2,7],[6,8,9,4,2,5],[1,1,5,8,8,1],[5,6,5,2,9,9],[4,4,6,2,5,4],[4,4,5,3,1,6],[9,2,2,1,9,3]]
-# grid = [[1,0,0,0,0,0,1],[2,0,0,0,0,3,0],[2,0,9,0,0,0,0],[0,3,0,5,4,0,0],[1,0,2,3,0,0,6]]
-sol = Solution_19()
-print (sol.cherryPickup(grid))
+# grid = [[8,8,10,9,1,7],[8,8,1,8,4,7],[8,6,10,3,7,7],[3,0,9,3,2,7],[6,8,9,4,2,5],[1,1,5,8,8,1],[5,6,5,2,9,9],[4,4,6,2,5,4],[4,4,5,3,1,6],[9,2,2,1,9,3]]
+# # grid = [[1,0,0,0,0,0,1],[2,0,0,0,0,3,0],[2,0,9,0,0,0,0],[0,3,0,5,4,0,0],[1,0,2,3,0,0,6]]
+# sol = Solution_19()
+# print (sol.cherryPickup(grid))
+
+#--------------------------------------------------------
+# December, 20th. Decoded String at Index
+# An encoded string S is given.  To find and write the decoded string to a tape, the encoded string is read one character at a time and the following steps are taken:
+# If the character read is a letter, that letter is written onto the tape.
+# If the character read is a digit (say d), the entire current tape is repeatedly written d-1 more times in total.
+# Now for some encoded string S, and an index K, find and return the K-th letter (1 indexed) in the decoded string.
+
+import time
+def timing_val(func):
+    def wrapper(*arg, **kw):
+        '''source: http://www.daniweb.com/code/snippet368.html'''
+        t1 = time.time()
+        res = func(*arg, **kw)
+        t2 = time.time()
+        return (t2 - t1), res, func.__name__
+    return wrapper
+
+
+class Solution_20(object):
+    @timing_val
+    def decodeAtIndex(self, S, K):
+        """
+        :type S: str
+        :type K: int
+        :rtype: str
+        """
+        decoded_S = S[0]
+        digits = "23456789"
+        for char in S[1:]:
+            if char in digits:
+                decoded_S = decoded_S * int(char)
+                if len(decoded_S) > K:
+                    return decoded_S[K-1]
+            else:
+                decoded_S = decoded_S + char
+        return decoded_S[K-1]
+
+S = "y959q969u3hb22odq595"
+sol = Solution_20()
+print(sol.decodeAtIndex(S,222280369))
+
+

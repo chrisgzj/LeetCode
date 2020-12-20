@@ -579,6 +579,106 @@ class Solution_13(object):
         return max(maximums)
 
 
-nums = [7,9,8,0,7,1,3,5,5,2]
-sol = Solution_13()
-print(sol.maxCoins(nums))
+# nums = [7,9,8,0,7,1,3,5,5,2]
+# sol = Solution_13()
+# print(sol.maxCoins(nums))
+
+
+#--------------------------------------------------------
+# December, 16th. Validate Binary Search Tree
+# Given the root of a binary tree, determine if it is a valid binary search tree (BST).
+# A valid BST is defined as follows:
+# The left subtree of a node contains only nodes with keys less than the node's key.
+# The right subtree of a node contains only nodes with keys greater than the node's key.
+# Both the left and right subtrees must also be binary search trees.
+
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution_16(object):
+    def isValidNode(self, current, greater_than = '', smaller_than = ''):
+        if current is None:
+            return True
+        for val in greater_than.split(","):
+            if val != '' and current.val <= float(val):
+                return False
+        for val in smaller_than.split(","):
+            if val != '' and current.val >= float(val):
+                return False
+        left_node = self.isValidNode(current.left, greater_than, smaller_than + "," + str(current.val))
+        right_node = self.isValidNode(current.right, greater_than + "," + str(current.val), smaller_than)
+        return left_node and right_node
+
+    def isValidBST(self, root):
+        """
+        :type root: TreeNode
+        :rtype: bool
+        """
+        left_node = self.isValidNode(root.left, smaller_than = str(root.val))
+        right_node = self.isValidNode(root.right, greater_than = str(root.val))
+        return left_node and right_node
+
+# test_root = TreeNode(5, TreeNode(3, TreeNode(2), TreeNode(4)), TreeNode(6, None, TreeNode(8, TreeNode(7), TreeNode(9))))
+# test_root = TreeNode(3, TreeNode(1, TreeNode(0), TreeNode(2)), TreeNode(5, TreeNode(4), TreeNode(6)))
+# test_root = TreeNode(34, TreeNode(-6, TreeNode(-21)))
+# sol = Solution_16()
+# print(sol.isValidBST(test_root))
+
+
+#--------------------------------------------------------
+# December, 19th. Cherry Pickup II.
+# Given a rows x cols matrix grid representing a field of cherries. Each cell in grid represents the number of cherries that you can collect.
+# You have two robots that can collect cherries for you, Robot #1 is located at the top-left corner (0,0) , and Robot #2 is located at the top-right corner (0, cols-1) of the grid.
+# Return the maximum number of cherries collection using both robots  by following the rules below:
+# From a cell (i,j), robots can move to cell (i+1, j-1) , (i+1, j) or (i+1, j+1).
+# When any robot is passing through a cell, It picks it up all cherries, and the cell becomes an empty cell (0).
+# When both robots stay on the same cell, only one of them takes the cherries.
+# Both robots cannot move outside of the grid at any moment.
+# Both robots should reach the bottom row in the grid.
+
+
+class Solution_19(object):
+    """The solution is a brute force recursive approach that stores known maximum values for increasing performance."""
+    def __init__(self):
+        self.known_max = {} #i, j0, j1
+
+    def recursive_cherry(self, grid, current_i, current_j0, current_j1):
+        """
+        The function explores all possible paths for the two robots at the same time and returns the maximum possible number of cherries.
+        It uses the dictionary in the class (self.known_max) to avoid computing the same result several times.
+        :type grid: List[List[int]]
+        :type current_i: int Represents the row
+        :type current_j0: int Represents the column of left robot
+        :type current_j1: int Represents the column of right robot
+        :rtype: int
+        """
+        if current_i == len(grid):
+            return 0
+        if current_j0 < 0 or current_j0 >= len(grid[0]) or current_j1 < 0 or current_j1 >= len(grid[0]) or current_j0 == current_j1:
+            return 0
+        new_cherries = grid[current_i][current_j0] + grid[current_i][current_j1]
+        max_cherries = self.known_max.get((current_i, current_j0, current_j1), 0)
+        if max_cherries == 0:
+            for added_j0 in [-1, 0, 1]:
+                for added_j1 in [-1, 0, 1]:
+                    returned_cherries = self.recursive_cherry(grid, current_i + 1, current_j0 + added_j0, current_j1 + added_j1)
+                    if returned_cherries > max_cherries:
+                        max_cherries = returned_cherries
+        self.known_max[(current_i, current_j0, current_j1)] = max_cherries
+        return new_cherries + max_cherries
+
+    def cherryPickup(self, grid):
+        """
+        :type grid: List[List[int]]
+        :rtype: int
+        """
+        return self.recursive_cherry(grid, 0, 0, len(grid[0]) - 1)
+
+
+grid = [[8,8,10,9,1,7],[8,8,1,8,4,7],[8,6,10,3,7,7],[3,0,9,3,2,7],[6,8,9,4,2,5],[1,1,5,8,8,1],[5,6,5,2,9,9],[4,4,6,2,5,4],[4,4,5,3,1,6],[9,2,2,1,9,3]]
+# grid = [[1,0,0,0,0,0,1],[2,0,0,0,0,3,0],[2,0,9,0,0,0,0],[0,3,0,5,4,0,0],[1,0,2,3,0,0,6]]
+sol = Solution_19()
+print (sol.cherryPickup(grid))

@@ -704,33 +704,57 @@ def timing_val(func):
 
 
 class Solution_20(object):
-    @timing_val
+    """Solution insight: the actual decoded string should not be computed. Rather, the enconded string
+    should be traversed in reverse reducing the scope of the problem recurrently"""
+    def sizeOfDecoded(self, S):
+        """Calculates the size of the decoded string without computing it"""
+        digits = "23456789"
+        decoded_size = 0
+        for char in S:
+            if char in digits:
+                decoded_size = decoded_size * int(char)
+            else:
+                decoded_size += 1
+        return decoded_size
+
+    # @timing_val
     def decodeAtIndex(self, S, K):
         """
         :type S: str
         :type K: int
         :rtype: str
+        Traverses the encoded string in reverse. For each digit found, it divides the size of the decoded string.
+        On each loop, K is recalculated according to the new size of the decoded string.
         """
-        decoded_S = ""
-        regex_pairs = re.findall(r"([a-z]+)([2-9]+)", S)
-        for pair in regex_pairs:
-            next_product = 1
-            for item in pair[1]:
-                next_product = next_product * int(item)
-                # if next_product > K:
-                #     break
-            decoded_S = (decoded_S + pair[0]) * next_product
-        last_letters = re.search(r"[a-z]+$", S)
-        if last_letters:
-            decoded_S = decoded_S + last_letters.group(0)
-        return decoded_S [K-1]
+        decoded_size = self.sizeOfDecoded(S)
+        digits = "23456789"
+        for i in reversed(S):
+            K %= decoded_size
+            if (K == 0 or K == decoded_size) and not(i in digits):
+                return i
+            if i in digits:
+                decoded_size = decoded_size / int(i)
+            else:
+                decoded_size -= 1
 
 
-S = "y959q969u3hb22odq595"
-# S = "abc"
 sol = Solution_20()
-print(sol.decodeAtIndex(S,222280369))
 
+# S = "abc"
+# print(sol.decodeAtIndex(S,1)) #Expected: a
+#
+# S = "leet2code3"
+# print(sol.decodeAtIndex(S,10)) #Expected: o
+#
+# S = "ha22"
+# print(sol.decodeAtIndex(S,5)) #Expected: h
+#
+# S = "vk6u5xhq9v"
+# print(sol.decodeAtIndex(S,554)) #Expected: k
 
+S = "a2b3c4d5e6f7g8h9"
+print(sol.decodeAtIndex(S,9)) #Expected: b
 
+# S = "y959q969u3hb22odq595"
+# print(sol.decodeAtIndex(S,222280369)) #Expected: y
 
